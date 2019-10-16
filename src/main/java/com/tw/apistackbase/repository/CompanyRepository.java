@@ -9,6 +9,6 @@ public interface CompanyRepository extends JpaRepository<Company,Long> {
 
 
    Company findOneByName(String name);
-   //Company findOneByNameandId(Long id);
+   Company findOneByNameandId(Long id);
 
 }
