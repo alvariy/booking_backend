@@ -10,4 +10,5 @@ public class JavaSpringDataJpaPracticeApplication {
 		SpringApplication.run(JavaSpringDataJpaPracticeApplication.class, args);
 	}
 
+
 }
