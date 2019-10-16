@@ -7,10 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/companies")
 public class CompanyController {
@@ -27,29 +23,37 @@ public class CompanyController {
     }
 
     @DeleteMapping(value = "/{id}", produces = {"application/json"})
-    public Iterable<Company>  deleteCompanyById(@PathVariable Long id){
-        companyRepository.deleteById(id);
-        return companyRepository.findAll();
+    public ResponseEntity deleteCompanyById(@PathVariable Long id){
+        if ( companyRepository.findById(id).isPresent()) {
+            companyRepository.deleteById(id);
+            return new ResponseEntity<>(companyRepository.findAll(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
      @DeleteMapping(produces = {"application/json"})
-     public Iterable<Company>  deleteCompanyById(){
+     public ResponseEntity  deleteCompanyById(){
        companyRepository.deleteAll();
-       return companyRepository.findAll();
+       return new ResponseEntity<>(companyRepository.findAll(), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}" , produces = {"application/json"})
-    public Iterable<Company> modifyCompany(@PathVariable Long id, @RequestBody Company company){
-        Company company1 = companyRepository.getOne(id);
-        company1.setName(company.getName());
-        company1.setCompanyProfile(company.getCompanyProfile());
-        company1.setEmployees(company.getEmployees());
-        companyRepository.save(company1);
-        return companyRepository.findAll();
+    public ResponseEntity modifyCompany(@PathVariable Long id, @RequestBody Company company){
+        if ( companyRepository.findById(id).isPresent()) {
+            Company company1 = companyRepository.getOne(id);
+            company1.setName(company.getName());
+            company1.setCompanyProfile(company.getCompanyProfile());
+            company1.setEmployees(company.getEmployees());
+            companyRepository.save(company1);
+            return new ResponseEntity<>(companyRepository.findAll(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping(produces = {"application/json"})
-    public Company add(@RequestBody Company company) {
-        return companyRepository.save(company);
+    public ResponseEntity<Company> add(@RequestBody Company company) {
+        return new ResponseEntity<>(companyRepository.save(company), HttpStatus.CREATED);
     }
 }
