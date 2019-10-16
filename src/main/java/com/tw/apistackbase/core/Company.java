@@ -15,6 +15,9 @@ public class Company {
     @OneToOne(cascade = CascadeType.ALL)
     private CompanyProfile companyProfile;
 
+    @OneToMany(cascade =  CascadeType.ALL)
+    private List<Employee> employees;
+
     public List<Employee> getEmployees() {
         return employees;
     }
@@ -22,9 +25,6 @@ public class Company {
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
     }
-
-    @OneToMany(cascade =  CascadeType.ALL)
-    private List<Employee> employees;
 
     public CompanyProfile getCompanyProfile() {
         return companyProfile;
