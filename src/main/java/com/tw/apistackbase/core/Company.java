@@ -12,6 +12,16 @@ public class Company {
 
     private String name;
 
+    public Company() {
+    }
+
+    public Company(Long id, String name, CompanyProfile companyProfile, List<Employee> employees) {
+        this.id = id;
+        this.name = name;
+        this.companyProfile = companyProfile;
+        this.employees = employees;
+    }
+
     @OneToOne(cascade = CascadeType.ALL)
     private CompanyProfile companyProfile;
 

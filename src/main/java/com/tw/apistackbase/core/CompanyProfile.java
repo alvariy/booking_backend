@@ -11,6 +11,15 @@ public class CompanyProfile {
 
     private String certId;
 
+    public CompanyProfile() {
+    }
+
+    public CompanyProfile(Long id, String certId, Integer registeredCapital) {
+        this.id = id;
+        this.certId = certId;
+        this.registeredCapital = registeredCapital;
+    }
+
     private Integer registeredCapital;
 
     public Long getId() {

@@ -13,6 +13,16 @@ public class Employee {
     private Long id;
 
     private String name;
+
+    public Employee() {
+    }
+
+    public Employee(Long id, String name, Integer age) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+    }
+
     private Integer age;
 
 
