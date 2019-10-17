@@ -1,11 +1,8 @@
 package com.tw.apistackbase.controller;
 
 import com.tw.apistackbase.core.Company;
-import com.tw.apistackbase.repository.CompanyRepository;
+import com.tw.apistackbase.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,26 +13,31 @@ import java.util.List;
 @RequestMapping("/companies")
 public class CompanyController {
     @Autowired
-    CompanyRepository companyRepository;
+    CompanyService companyService;
     @GetMapping(value = "/all" ,produces = {"application/json"})
     public Iterable<Company> list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize) {
-        return companyRepository.findAll(PageRequest.of(page - 1 ,pageSize, Sort.by("name").descending()));
+        return companyService.findAll(page,pageSize);
+    }
+
+    @PostMapping(produces = {"application/json"})
+    public ResponseEntity<Company> add(@RequestBody Company company) {
+        return new ResponseEntity<>(companyService.save(company), HttpStatus.CREATED);
     }
 
     @GetMapping(produces = {"application/json"})
     public List<Company> getCompanyLikeName(@RequestParam(required = false) String name) {
         if(name == null)
         {
-            return  companyRepository.findAll();
+            return  companyService.findAll();
         }
-        return companyRepository.findByFirstnameLike(name);
+        return companyService.findByFirstnameLike(name);
     }
 
     @DeleteMapping(value = "/{id}", produces = {"application/json"})
     public ResponseEntity deleteCompanyById(@PathVariable Long id){
-        if ( companyRepository.findById(id).isPresent()) {
-            companyRepository.deleteById(id);
-            return new ResponseEntity<>(companyRepository.findAll(), HttpStatus.OK);
+        if ( companyService.findById(id).isPresent()) {
+            companyService.deleteById(id);
+            return new ResponseEntity<>(companyService.findAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -43,26 +45,21 @@ public class CompanyController {
 
      @DeleteMapping(produces = {"application/json"})
      public ResponseEntity  deleteCompanyById(){
-       companyRepository.deleteAll();
-       return new ResponseEntity<>(companyRepository.findAll(), HttpStatus.OK);
+       companyService.deleteAll();
+       return new ResponseEntity<>(companyService.findAll(), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}" , produces = {"application/json"})
     public ResponseEntity modifyCompany(@PathVariable Long id, @RequestBody Company company){
-        if ( companyRepository.findById(id).isPresent()) {
-            Company company1 = companyRepository.getOne(id);
+        if ( companyService.findById(id).isPresent()) {
+            Company company1 = companyService.getOne(id);
             company1.setName(company.getName());
             company1.setCompanyProfile(company.getCompanyProfile());
             company1.setEmployees(company.getEmployees());
-            companyRepository.save(company1);
-            return new ResponseEntity<>(companyRepository.findAll(), HttpStatus.OK);
+            companyService.save(company1);
+            return new ResponseEntity<>(companyService.findAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-
-    @PostMapping(produces = {"application/json"})
-    public ResponseEntity<Company> add(@RequestBody Company company) {
-        return new ResponseEntity<>(companyRepository.save(company), HttpStatus.CREATED);
     }
 }
