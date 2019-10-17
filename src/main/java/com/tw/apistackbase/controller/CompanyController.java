@@ -3,23 +3,32 @@ package com.tw.apistackbase.controller;
 import com.tw.apistackbase.core.Company;
 import com.tw.apistackbase.repository.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/companies")
 public class CompanyController {
     @Autowired
     CompanyRepository companyRepository;
-    @GetMapping(produces = {"application/json"})
-    public Iterable<Company> list() {
-        return companyRepository.findAll();
+    @GetMapping(value = "/all" ,produces = {"application/json"})
+    public Iterable<Company> list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize) {
+        return companyRepository.findAll(PageRequest.of(page - 1 ,pageSize, Sort.by("name").descending()));
     }
 
-    @GetMapping(value = "/{name}" ,produces = {"application/json"})
-    public ResponseEntity<Company> getCompanyByName(@PathVariable String name) {
-        return new ResponseEntity<>(companyRepository.findOneByName(name), HttpStatus.OK);
+    @GetMapping(produces = {"application/json"})
+    public List<Company> getCompanyLikeName(@RequestParam(required = false) String name) {
+        if(name == null)
+        {
+            return  companyRepository.findAll();
+        }
+        return companyRepository.findByFirstnameLike(name);
     }
 
     @DeleteMapping(value = "/{id}", produces = {"application/json"})
