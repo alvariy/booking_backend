@@ -11,15 +11,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,35 +43,28 @@ public class CompanyControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private CompanyController companyController;
+    private CompanyService companyService;
 
     @Test
     void should_post_company() throws Exception {
-        List<Employee> employeeList = new ArrayList<>();
-        Employee employee1 = new Employee(Long.parseLong("1"), "Iyan", 19);
-        Employee employee2 = new Employee(Long.parseLong("2"), "Tin", 23);
-
-        employeeList.add(employee1);
-        employeeList.add(employee2);
-
-        CompanyProfile companyProfile = new CompanyProfile(Long.parseLong("1"), "ID1234", 1234);
-
-        Company company = new Company();
-
-        company.setEmployees(employeeList);
-        company.setCompanyProfile(companyProfile);
-        company.setName("OOCL");
-        company.setId(Long.parseLong("1234"));
 
         ResultActions result = mvc.perform(post("/companies")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(company)));
+                .content(objectMapper.writeValueAsString(new Company())));;
 
         result.andExpect(status().isOk());
     }
 
     @Test
     void should_get_all_company() throws Exception {
+
+        when(companyService.list(anyInt(), anyInt() )).thenReturn(new ArrayList<>());
+        ResultActions result = mvc.perform(get("/companies/all"));
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    void should_get_all_company_base_on_name_with_parameter_isFound() throws Exception {
         List<Employee> employeeList = new ArrayList<>();
         Employee employee1 = new Employee(Long.parseLong("1"), "Iyan", 19);
         Employee employee2 = new Employee(Long.parseLong("2"), "Tin", 23);
@@ -90,185 +79,73 @@ public class CompanyControllerTest {
         company.setName("OOCL");
         company.setId(Long.parseLong("1234"));
 
-        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
-        requestParams.add("page", "1");
-        requestParams.add("pageSize", "5");
+        List<Company> companies = new ArrayList<>();
+        companies.add(company);
 
-
-        when(companyController.list(anyInt(),anyInt())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        ResultActions result = mvc.perform(get("/companies/all").params(requestParams));
+        when(companyService.getCompanyLikeName("OOCL")).thenReturn(companies);
+        ResultActions result = mvc.perform(get("/companies?name=OOCL"));
         result.andExpect(status().isOk());
     }
 
-//    @Test
-//    void should_get_all_company_base_on_name_with_parameter_isFound() throws Exception {
-//        List<Employee> employeeList = new ArrayList<>();
-//        Employee employee1 = new Employee(Long.parseLong("1"), "Iyan", 19);
-//        Employee employee2 = new Employee(Long.parseLong("2"), "Tin", 23);
-//
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//
-//        CompanyProfile companyProfile = new CompanyProfile(Long.parseLong("1"), "ID1234", 1234);
-//        Company company = new Company();
-//        company.setEmployees(employeeList);
-//        company.setCompanyProfile(companyProfile);
-//        company.setName("OOCL");
-//        company.setId(Long.parseLong("1234"));
-//
-//        List<Company> companies = new ArrayList<>();
-//        companies.add(company);
-//
-//        when(companyController.getCompanyLikeName("OOCL")).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-//        ResultActions result = mvc.perform(get("/companies/{name}", "OOCLS"));
-//        result.andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    void should_get_all_company_base_on_name_with_parameter_notFound() throws Exception {
-//        List<Employee> employeeList = new ArrayList<>();
-//        Employee employee1 = new Employee(Long.parseLong("1"), "Iyan", 19);
-//        Employee employee2 = new Employee(Long.parseLong("2"), "Tin", 23);
-//
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//
-//        CompanyProfile companyProfile = new CompanyProfile(Long.parseLong("1"), "ID1234", 1234);
-//        Company company = new Company();
-//        company.setEmployees(employeeList);
-//        company.setCompanyProfile(companyProfile);
-//        company.setName("OOCL");
-//        company.setId(Long.parseLong("1234"));
-//
-//        List<Company> companies = new ArrayList<>();
-//        companies.add(company);
-//
-//        when(companyService.getCompanyLikeName("OOCL")).thenReturn(companies);
-//        ResultActions result = mvc.perform(get("/companies?name=asdsds"));
-//        result.andExpect(status().isNotFound());
-//    }
+    @Test
+    void should_get_all_company_base_on_name_with_parameter_notFound() throws Exception {
+
+        when(companyService.getCompanyLikeName(anyString())).thenReturn(new ArrayList<>());
+        ResultActions result = mvc.perform(get("/companies?name=asdsds"));
+        result.andExpect(status().isNotFound());
+    }
 
     @Test
     void should_delete_company_by_id_isFound() throws Exception {
-//        List<Employee> employeeList = new ArrayList<>();
-//        Employee employee1 = new Employee(Long.parseLong("1"), "Iyan", 19);
-//        Employee employee2 = new Employee(Long.parseLong("2"), "Tin", 23);
-//
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//
-//        CompanyProfile companyProfile = new CompanyProfile(Long.parseLong("1"), "ID1234", 1234);
-//        Company company = new Company();
-//        company.setEmployees(employeeList);
-//        company.setCompanyProfile(companyProfile);
-//        company.setName("OOCL");
-//        company.setId(Long.parseLong("1234"));
-//
-//        List<Company> companies = new ArrayList<>();
-//        companies.add(company);
 
-       // when(companyController.deleteCompanyById(fakeLong)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        ResultActions result = mvc.perform(delete("/companies/{id}", "1234"));
+        when(companyService.deleteCompanyById(anyLong())).thenReturn(Boolean.TRUE);
+        ResultActions result = mvc.perform(delete("/companies/1234"));
         result.andExpect(status().isOk());
     }
 
-//    @Test
-//    void should_delete_company_by_id() throws Exception {
-//        List<Employee> employeeList = new ArrayList<>();
-//        Employee employee1 = new Employee(Long.parseLong("1"), "Iyan", 19);
-//        Employee employee2 = new Employee(Long.parseLong("2"), "Tin", 23);
-//
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//
-//        CompanyProfile companyProfile = new CompanyProfile(Long.parseLong("1"), "ID1234", 1234);
-//        Company company = new Company();
-//        company.setEmployees(employeeList);
-//        company.setCompanyProfile(companyProfile);
-//        company.setName("OOCL");
-//        company.setId(Long.parseLong("1234"));
-//
-//        List<Company> companies = new ArrayList<>();
-//        companies.add(company);
-//
-//        when(companyService.deleteCompanyById(Long.parseLong("1234"))).thenReturn(Boolean.FALSE);
-//        ResultActions result = mvc.perform(delete("/companies/1234"));
-//        result.andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    void should_delete_all_company_isDeleted() throws Exception {
-//        List<Employee> employeeList = new ArrayList<>();
-//        Employee employee1 = new Employee(Long.parseLong("1"), "Iyan", 19);
-//        Employee employee2 = new Employee(Long.parseLong("2"), "Tin", 23);
-//
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//
-//        CompanyProfile companyProfile = new CompanyProfile(Long.parseLong("1"), "ID1234", 1234);
-//        Company company = new Company();
-//        company.setEmployees(employeeList);
-//        company.setCompanyProfile(companyProfile);
-//        company.setName("OOCL");
-//        company.setId(Long.parseLong("1234"));
-//
-//        List<Company> companies = new ArrayList<>();
-//        companies.add(company);
-//
-//        when(companyService.deleteAllCompany()).thenReturn(true);
-//        ResultActions result = mvc.perform(delete("/companies"));
-//        result.andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    void should_delete_all_company_isNotDeleted() throws Exception {
-//        List<Employee> employeeList = new ArrayList<>();
-//        Employee employee1 = new Employee(Long.parseLong("1"), "Iyan", 19);
-//        Employee employee2 = new Employee(Long.parseLong("2"), "Tin", 23);
-//
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//
-//        CompanyProfile companyProfile = new CompanyProfile(Long.parseLong("1"), "ID1234", 1234);
-//        Company company = new Company();
-//        company.setEmployees(employeeList);
-//        company.setCompanyProfile(companyProfile);
-//        company.setName("OOCL");
-//        company.setId(Long.parseLong("1234"));
-//
-//        List<Company> companies = new ArrayList<>();
-//        companies.add(company);
-//
-//        when(companyService.deleteAllCompany()).thenReturn(false);
-//        ResultActions result = mvc.perform(delete("/companies"));
-//        result.andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldModifyCompany() throws Exception {
-//        List<Employee> employeeList = new ArrayList<>();
-//        Employee employee1 = new Employee(Long.parseLong("1"), "Iyan", 19);
-//        Employee employee2 = new Employee(Long.parseLong("2"), "Tin", 23);
-//
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//
-//        CompanyProfile companyProfile = new CompanyProfile(Long.parseLong("1"), "ID1234", 1234);
-//        Company company = new Company();
-//        company.setEmployees(employeeList);
-//        company.setCompanyProfile(companyProfile);
-//        company.setName("OOCL");
-//        company.setId(Long.parseLong("1234"));
-//
-//        List<Company> companies = new ArrayList<>();
-//        companies.add(company);
-//
-//        when(companyService.modifyCompany(anyLong(), any())).thenReturn(company);
-//        ResultActions result = mvc.perform(put("/companies/{id}", 1234L)
-//                .content(objectMapper.writeValueAsString(company))
-//                .contentType(MediaType.APPLICATION_JSON));
-//
-//        result.andExpect(status().isOk()).andDo(print()).andExpect(jsonPath("$.id", is(2L)));
-//
-//    }
+    @Test
+    void should_not_delete_company_by_id() throws Exception {
+
+        when(companyService.deleteCompanyById(anyLong())).thenReturn(Boolean.FALSE);
+        ResultActions result = mvc.perform(delete("/companies/1234"));
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_delete_all_company_isDeleted() throws Exception {
+
+        when(companyService.deleteAllCompany()).thenReturn(true);
+        ResultActions result = mvc.perform(delete("/companies"));
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    void should_delete_all_company_isNotDeleted() throws Exception {
+
+        when(companyService.deleteAllCompany()).thenReturn(false);
+        ResultActions result = mvc.perform(delete("/companies"));
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_ModifyCompany_if_null() throws Exception {
+
+        when(companyService.modifyCompany(anyLong(), any())).thenReturn(null);
+        ResultActions result = mvc.perform(put("/companies/{id}", 1234L)
+                .content(objectMapper.writeValueAsString(new Company()))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldModifyCompany() throws Exception {
+
+        when(companyService.modifyCompany(anyLong(), any())).thenReturn(new Company());
+        ResultActions result = mvc.perform(put("/companies/{id}", 1234L)
+                .content(objectMapper.writeValueAsString(new Company()))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk());
+    }
 }

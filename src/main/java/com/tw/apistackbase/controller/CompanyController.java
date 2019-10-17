@@ -8,24 +8,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/companies")
 public class CompanyController {
     @Autowired
+    private
     CompanyService companyService;
-    @GetMapping(value = "/all" ,produces = {"application/json"})
-    public  ResponseEntity<Iterable<Company>> list(@RequestParam Integer page, @RequestParam Integer pageSize) {
 
-        if(page != null && pageSize != null){
-             return new ResponseEntity<>(companyService.list(page,pageSize), HttpStatus.OK);
+    @GetMapping(value = "/all" ,produces = {"application/json"})
+    public ResponseEntity<Iterable<Company>> list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize) {
+        if(ResponseEntity.ok(companyService.list(page,pageSize)).getStatusCode() == HttpStatus.OK) {
+            return new ResponseEntity<>(companyService.list(page,pageSize), HttpStatus.OK);
         }
-        return new ResponseEntity<>(companyService.getAll(), HttpStatus.OK);
-//        if(ResponseEntity.ok(companyService.list(page,pageSize)).getStatusCode() == HttpStatus.OK) {
-//            return HttpStatus.OK;
-//        }
-//        return HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(companyService.list(page,pageSize), HttpStatus.BAD_GATEWAY);
+
     }
 
     @PostMapping(produces = {"application/json"})
@@ -39,7 +35,7 @@ public class CompanyController {
     }
 
     @GetMapping(produces = {"application/json"})
-    public ResponseEntity getCompanyLikeName(@RequestParam(required = false) String name) {
+    public ResponseEntity<java.util.List<Company>> getCompanyLikeName(@RequestParam(required = false) String name) {
         if(companyService.getCompanyLikeName(name).isEmpty())
         {
             return new ResponseEntity<>(companyService.getCompanyLikeName(name), HttpStatus.NOT_FOUND);
@@ -50,7 +46,7 @@ public class CompanyController {
 
     @DeleteMapping(value = "/{id}", produces = {"application/json"})
     public ResponseEntity deleteCompanyById(@PathVariable Long id){
-        if (companyService.deleteCompanyById(id) == false) {
+        if (!companyService.deleteCompanyById(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.OK);
@@ -58,7 +54,7 @@ public class CompanyController {
 
      @DeleteMapping(produces = {"application/json"})
      public ResponseEntity  deleteAllCompany(){
-         if (companyService.deleteAllCompany() == true) {
+         if (companyService.deleteAllCompany()) {
              return new ResponseEntity<>(HttpStatus.OK);
          }
          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
