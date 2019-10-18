@@ -77,7 +77,7 @@ public class CompanyControllerTest {
         List<Company> companies = new ArrayList<>();
         companies.add(company);
 
-        when(companyService.getCompanyLikeName("OOCL")).thenReturn(companies);
+        when(companyService.getCompany("OOCL")).thenReturn(companies);
         ResultActions result = mvc.perform(get("/companies?name=OOCL"));
         result.andExpect(status().isOk());
     }
@@ -85,7 +85,7 @@ public class CompanyControllerTest {
     @Test
     void should_get_all_company_base_on_name_with_parameter_notFound() throws Exception {
 
-        when(companyService.getCompanyLikeName(anyString())).thenReturn(new ArrayList<>());
+        when(companyService.getCompany(anyString())).thenReturn(new ArrayList<>());
         ResultActions result = mvc.perform(get("/companies?name=asdsds"));
         result.andExpect(status().isNotFound());
     }

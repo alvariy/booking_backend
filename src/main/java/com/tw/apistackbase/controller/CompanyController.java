@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/companies")
 public class CompanyController {
@@ -33,39 +35,24 @@ public class CompanyController {
     }
 
     @GetMapping(produces = {"application/json"})
-    public java.util.List<Company> getCompanyLikeName(@RequestParam(required = false) String name) throws NotFoundException {
-        return companyService.getCompanyLikeName(name);
-//        if(companyService.getCompanyLikeName(name).isEmpty())
-//        {
-//            throw new NotFoundException(CANNOT_GET_NON_EXISTING_COMPANY);
-//        }
-//            return new ResponseEntity<>(companyService.getCompanyLikeName(name), HttpStatus.OK);
-
+    public List<Company> getCompany(@RequestParam(required = false) String name){
+        return companyService.getCompany(name);
     }
 
     @PostMapping(produces = {"application/json"})
-    public ResponseEntity add(@RequestBody Company company) throws NotFoundException {
+    public Company add(@RequestBody Company company)  {
 
-        if(ResponseEntity.ok(companyService.add(company)).getStatusCode() == HttpStatus.OK)
-        {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-       throw new NotFoundException(CANNOT_ADD_COMPANY);
+        return companyService.add(company);
     }
 
     @DeleteMapping(value = "/{id}", produces = {"application/json"})
-    public ResponseEntity deleteCompanyById(@PathVariable Long id) throws NotFoundException{
-        if (!companyService.deleteCompanyById(id)) {
-            throw new NotFoundException(CANNOT_DELETE_COMPANY);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+    public String deleteCompanyById(@PathVariable Long id) throws NotFoundException{
+      return companyService.deleteCompanyById(id);
     }
 
     @PutMapping(value = "/{id}" , produces = {"application/json"})
-    public ResponseEntity modifyCompany(@PathVariable Long id, @RequestBody Company company) throws NotFoundException{
-        if (companyService.modifyCompany(id, company) == null) {
-            throw new NotFoundException(CANNOT_UPDATE_COMPANY);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+    public Company modifyCompany(@PathVariable Long id, @RequestBody Company company) throws NotFoundException{
+      return companyService.modifyCompany(id, company);
+
     }
 }
