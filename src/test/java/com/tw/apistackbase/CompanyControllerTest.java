@@ -18,17 +18,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
+
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -50,15 +45,15 @@ public class CompanyControllerTest {
 
         ResultActions result = mvc.perform(post("/companies")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(new Company())));;
+                .content(objectMapper.writeValueAsString(new Company())));
 
         result.andExpect(status().isOk());
     }
 
     @Test
     void should_get_all_company() throws Exception {
-
-        when(companyService.list(anyInt(), anyInt() )).thenReturn(new ArrayList<>());
+        //put specific parameter value
+        when(companyService.list(anyInt(), anyInt())).thenReturn(new ArrayList<>());
         ResultActions result = mvc.perform(get("/companies/all"));
         result.andExpect(status().isOk());
     }

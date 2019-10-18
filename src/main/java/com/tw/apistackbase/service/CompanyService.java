@@ -51,6 +51,7 @@ public class CompanyService {
     }
 
     public Company modifyCompany(Long id, Company company){
+        //declare a variable, proper naming
         if ( companyRepository.findById(id).isPresent()) {
             Company company1 = companyRepository.getOne(id);
             company1.setName(company.getName());
