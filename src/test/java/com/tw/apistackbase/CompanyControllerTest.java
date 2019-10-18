@@ -89,6 +89,15 @@ public class CompanyControllerTest {
     }
 
     @Test
+    void should_throw_company_not_found_when_0_size() throws Exception {
+
+
+        when(companyService.getCompany(anyString())).thenThrow(new NotFoundException("No Company was found!"));
+        ResultActions result = mvc.perform(get("/companies?name=Tin"));
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
     void should_get_all_company_base_on_name_with_parameter_notFound() throws Exception {
 
         Company company =  new Company();
