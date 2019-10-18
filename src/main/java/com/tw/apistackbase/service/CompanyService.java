@@ -17,7 +17,7 @@ public class CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
-    public Iterable<Company> list(Integer page, Integer pageSize){
+    public Iterable<Company> list(Integer page, Integer pageSize) {
         return companyRepository.findAll(PageRequest.of(page-1,pageSize));
     }
 
@@ -36,9 +36,9 @@ public class CompanyService {
         throw new NotFoundException(NO_COMPANY_WAS_DELETED);
     }
 
-    public Company add(Company company){
-        companyRepository.save(company);
-        return company;
+    public Company add(Company company) {
+            companyRepository.save(company);
+            return company;
     }
 
     public Company modifyCompany(Long id, Company company) throws NotFoundException{
@@ -51,6 +51,4 @@ public class CompanyService {
             throw new NotFoundException("NO COMPANY WAS MODIFIED");
         }
     }
-
-
 }

@@ -26,12 +26,8 @@ public class CompanyController {
     CompanyService companyService;
 
     @GetMapping(value = "/all" ,produces = {"application/json"})
-    public ResponseEntity<Iterable<Company>> list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize) throws NotFoundException {
-        if(ResponseEntity.ok(companyService.list(page,pageSize)).getStatusCode() == HttpStatus.OK) {
-            return new ResponseEntity<>(companyService.list(page,pageSize), HttpStatus.OK);
-        }
-        throw new NotFoundException(CANNOT_GET_NON_EXISTING_COMPANY);
-
+    public Iterable<Company> list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize) throws NotFoundException {
+        return companyService.list(page,pageSize);
     }
 
     @GetMapping(produces = {"application/json"})
@@ -40,8 +36,7 @@ public class CompanyController {
     }
 
     @PostMapping(produces = {"application/json"})
-    public Company add(@RequestBody Company company)  {
-
+    public Company add(@RequestBody Company company) {
         return companyService.add(company);
     }
 
@@ -52,7 +47,7 @@ public class CompanyController {
 
     @PutMapping(value = "/{id}" , produces = {"application/json"})
     public Company modifyCompany(@PathVariable Long id, @RequestBody Company company) throws NotFoundException{
-      return companyService.modifyCompany(id, company);
+        return companyService.modifyCompany(id, company);
 
     }
 }
