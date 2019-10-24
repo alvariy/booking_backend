@@ -8,6 +8,17 @@ import javax.persistence.Id;
 @Entity
 public class PickUp {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    private Long wayBillNumber;
+
+    private String pickUpTime;
+
+    public PickUp() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -30,17 +41,6 @@ public class PickUp {
 
     public void setPickUpTime(String pickUpTime) {
         this.pickUpTime = pickUpTime;
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    private Long wayBillNumber;
-
-    private String pickUpTime;
-
-    public PickUp() {
     }
 
 }
