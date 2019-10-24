@@ -12,6 +12,16 @@ public class Packages {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private Long wayBillNumber;
+
+    private String recipients;
+
+    private String phone;
+
+    private String weight;
+
+    private String pickUdDate;
+
     public Long getId() {
         return id;
     }
@@ -52,13 +62,13 @@ public class Packages {
         this.weight = weight;
     }
 
-    private Long wayBillNumber;
+    public String getPickUdDate() {
+        return pickUdDate;
+    }
 
-    private String recipients;
-
-    private String phone;
-
-    private String weight;
+    public void setPickUdDate(String pickUdDate) {
+        this.pickUdDate = pickUdDate;
+    }
 
     public Packages() {
     }

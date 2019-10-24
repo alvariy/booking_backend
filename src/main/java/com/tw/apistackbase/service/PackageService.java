@@ -23,4 +23,14 @@ public class PackageService {
     public List<Packages> getAllPackages() {
         return  packageRepository.findAll();
     }
+
+    public Packages modifyPackage(Long wayBillNumber, Packages packages) {
+        if (packageRepository.findByName(wayBillNumber) != null) {
+            Packages packages1 = packageRepository.findByName(wayBillNumber);
+            packages1.setPickUdDate(packages.getPickUdDate());
+            packageRepository.save(packages1);
+            return packages1;
+        }
+        return packages;
+    }
 }

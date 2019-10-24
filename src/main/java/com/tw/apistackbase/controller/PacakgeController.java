@@ -20,6 +20,11 @@ public class PacakgeController {
         return packageService.addPackage(packages);
     }
 
+    @PutMapping(value = "/{wayBillNumber}", produces = {"application/json"})
+    public Packages modifyPackage(@PathVariable Long wayBillNumber, @RequestBody Packages packages){
+        return packageService.modifyPackage(wayBillNumber, packages);
+    }
+
     @GetMapping(produces = {"application/json"})
     public List<Packages> getCompany(){
         return packageService.getAllPackages();
